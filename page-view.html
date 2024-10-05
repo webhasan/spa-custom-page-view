@@ -1,0 +1,33 @@
+<script>
+(function() {
+    var originalPushState = history.pushState;
+    var originalReplaceState = history.replaceState;
+ 
+    history.pushState = function(state, title, url) {
+        originalPushState.apply(this, arguments);
+        triggerPageChange();
+    };
+ 
+    history.replaceState = function(state, title, url) {
+        originalReplaceState.apply(this, arguments);
+        triggerPageChange();
+    };
+ 
+    window.addEventListener('popstate', function() {
+        triggerPageChange();
+    });
+ 
+    function triggerPageChange() {
+        var pageUrl = window.location.href; 
+        setTimeout(function() {
+            var pageTitle = document.title;
+            dataLayer = window.dataLayer || [];
+            dataLayer.push({
+                event: 'custom_page_view',
+                page_location: pageUrl,
+                page_title: pageTitle
+            })
+        }, 1000); //update this value as you need
+    }
+})();
+</script>
